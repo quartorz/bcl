@@ -4,13 +4,15 @@
 #include <cstdint>
 #include <type_traits>
 
+#include <sprout/index_tuple.hpp>
+
 #include <bcl/has_xxx.hpp>
 
 // definitions of bcl::tuple and bcl::get<I>
 
 namespace bcl{
 	namespace detail{
-		template <::std::size_t I, typename T>
+		template <::sprout::index_t I, typename T>
 		class holder{
 			T value;
 
@@ -36,38 +38,38 @@ namespace bcl{
 		template <typename Seq, typename ... Types>
 		struct tuple_base;
 
-		template <::std::size_t ... Is, typename... Types>
-		struct tuple_base<::std::index_sequence<Is...>, Types...>
+		template <::sprout::index_t ... Is, typename... Types>
+		struct tuple_base<::sprout::index_tuple<Is...>, Types...>
 			: holder<Is, Types>...
 		{
 			constexpr tuple_base() = default;
 
 			template <typename ... Args, typename = ::std::enable_if_t<sizeof...(Args) != 0>>
-			constexpr tuple_base(Args... args)
-				: holder<Is, Types>(args)...
+			constexpr tuple_base(Args && ... args)
+				: holder<Is, Types>(::std::forward<Args>(args))...
 			{
 			}
 
-			template <::std::size_t I>
+			template <::sprout::index_t I>
 			constexpr auto get() const
 			{
 				return get_impl<I>(*this);
 			}
 
-			template <::std::size_t I>
+			template <::sprout::index_t I>
 			auto &get()
 			{
 				return get_impl<I>(*this);
 			}
 
 		private:
-			template <::std::size_t I, typename T>
+			template <::sprout::index_t I, typename T>
 			constexpr auto get_impl(const holder<I, T> &x) const
 			{
 				return x();
 			}
 
-			template <::std::size_t I, typename T>
+			template <::sprout::index_t I, typename T>
 			auto &get_impl(holder<I, T> &x)
 			{
 				return x();
@@ -81,20 +83,20 @@ namespace bcl{
 	 */
 	template <typename ... Ts>
 	struct tuple
-		: detail::tuple_base<::std::make_index_sequence<sizeof...(Ts)>, Ts...>
+		: detail::tuple_base<::sprout::index_range<0, sizeof...(Ts)>, Ts...>
 	{
-		using detail::tuple_base<::std::make_index_sequence<sizeof...(Ts)>, Ts...>::tuple_base;
+		using detail::tuple_base<::sprout::index_range<0, sizeof...(Ts)>, Ts...>::tuple_base;
 	};
 
 	/*! @brief equivalent to std::get<I>
 	 */
-	template <::std::size_t I, typename ... Ts>
+	template <::sprout::index_t I, typename ... Ts>
 	constexpr auto get(const tuple<Ts...> &x)
 	{
 		return x.template get<I>();
 	}
 
-	template <::std::size_t I, typename ... Ts>
+	template <::sprout::index_t I, typename ... Ts>
 	auto &get(tuple<Ts...> &x)
 	{
 		return x.template get<I>();
@@ -281,5 +283,18 @@ namespace bcl{
 
 	template <typename VTuple, typename Tuple>
 	using tuple_remove_t = typename tuple_remove<VTuple, Tuple>::type;
+}
+
+namespace bcl{
+	template <template <typename ...> class T, typename Tuple>
+	struct tuple_transform;
+
+	template <template <typename ...> class T, typename ... Types>
+	struct tuple_transform<T, tuple<Types...>>{
+		using type = T<Types...>;
+	};
+
+	template <template <typename ...> class T, typename Tuple>
+	using tuple_transform_t = typename tuple_transform<T, Tuple>::type;
 }
 

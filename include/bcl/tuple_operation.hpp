@@ -74,7 +74,11 @@ namespace bcl{
 	struct tuple_operation
 		: detail::tuple_operation_impl<Comp, State, TupleA, TupleB, 0, tuple_size<TupleA>::value>
 	{
-	};	
+	};
+
+	template <typename T, typename Tuple>
+	struct tuple_operation_comp_tautology : ::std::true_type{
+	};
 }
 
 namespace bcl{
@@ -153,7 +157,7 @@ namespace bcl{
 	struct tuple_merge{
 		using type =
 			typename tuple_operation<
-				detail::tuple_merge_comp,
+				tuple_operation_comp_tautology,
 				detail::tuple_merge_state,
 				tuple<Tuples...>,
 				tuple<>
