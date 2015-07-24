@@ -254,6 +254,60 @@ namespace bcl{
 			constexpr auto result = encode(T::value / U::value);
 			return BCL_DOUBLE(result){};
 		}
+
+		template <
+			typename T, typename U,
+			::std::enable_if_t<is_encoded_double_v<T> && is_encoded_double_v<U>>* = nullptr
+		>
+		constexpr bool operator==(T, U)
+		{
+			return T::value == U::value;
+		}
+
+		template <
+			typename T, typename U,
+			::std::enable_if_t<is_encoded_double_v<T> && is_encoded_double_v<U>>* = nullptr
+		>
+		constexpr bool operator!=(T, U)
+		{
+			return T::value != U::value;
+		}
+
+		template <
+			typename T, typename U,
+			::std::enable_if_t<is_encoded_double_v<T> && is_encoded_double_v<U>>* = nullptr
+		>
+		constexpr bool operator<(T, U)
+		{
+			return T::value < U::value;
+		}
+
+		template <
+			typename T, typename U,
+			::std::enable_if_t<is_encoded_double_v<T> && is_encoded_double_v<U>>* = nullptr
+		>
+		constexpr bool operator<=(T, U)
+		{
+			return T::value <= U::value;
+		}
+
+		template <
+			typename T, typename U,
+			::std::enable_if_t<is_encoded_double_v<T> && is_encoded_double_v<U>>* = nullptr
+		>
+		constexpr bool operator>(T, U)
+		{
+			return T::value > U::value;
+		}
+
+		template <
+			typename T, typename U,
+			::std::enable_if_t<is_encoded_double_v<T> && is_encoded_double_v<U>>* = nullptr
+		>
+		constexpr bool operator>=(T, U)
+		{
+			return T::value >= U::value;
+		}
 	}
 
 	using detail::is_encoded_double;
