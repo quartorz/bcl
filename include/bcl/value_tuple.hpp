@@ -71,12 +71,16 @@ namespace bcl{
 // tuple_size and tuple_element
 
 namespace bcl{
-	template <typename T, T ... Ns>
-	struct tuple_size<value_tuple<T, Ns...>>{
-		constexpr operator ::std::size_t() { return value; }
+	namespace detail{
+		template <typename T, T ... Ns>
+		struct tuple_size_impl<value_tuple<T, Ns...>>{
+			constexpr operator ::std::size_t() { return value; }
 
-		static constexpr ::std::size_t value = sizeof...(Ns);
-	};
+			static constexpr ::std::size_t value = sizeof...(Ns);
+
+			using type = tuple_size_impl;
+		};
+	}
 
 	template <typename Tuple>
 	using value_tuple_size = tuple_size<Tuple>;

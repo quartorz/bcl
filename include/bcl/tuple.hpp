@@ -85,6 +85,9 @@ namespace bcl{
 	struct tuple
 		: detail::tuple_base<::sprout::index_range<0, sizeof...(Ts)>, Ts...>
 	{
+		tuple() = default;
+		tuple(const tuple&) = default;
+		tuple(tuple &&) = default;
 		using detail::tuple_base<::sprout::index_range<0, sizeof...(Ts)>, Ts...>::tuple_base;
 	};
 
@@ -121,18 +124,25 @@ namespace bcl{
 // tuple_size<Tuple>
 
 namespace bcl{
+	namespace detail{
+		template <typename Tuple>
+		struct tuple_size_impl;
+
+		template <typename ... Types>
+		struct tuple_size_impl<tuple<Types...>>{
+			constexpr operator ::std::size_t() { return value; }
+
+			static constexpr ::std::size_t value = sizeof...(Types);
+
+			using type = tuple_size_impl;
+		};
+	}
+
 	/*! @class tuple_size
 	    @brief get the number of elements of Tuple
 	 */
 	template <typename Tuple>
-	struct tuple_size;
-
-	template <typename ... Types>
-	struct tuple_size<tuple<Types...>>{
-		constexpr operator ::std::size_t() { return value; }
-
-		static constexpr ::std::size_t value = sizeof...(Types);
-	};
+	using tuple_size = typename detail::tuple_size_impl<::std::decay_t<Tuple>>::type;
 }
 
 // definition of tuple_find<Tuple, T>
