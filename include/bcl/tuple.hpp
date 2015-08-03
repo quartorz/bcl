@@ -544,11 +544,49 @@ namespace bcl{
 		TupleA, TupleB, tuple<>, 0, tuple_size<TupleA>::value
 	>{
 	};
+
+	template <typename TupleA, typename TupleB>
+	using tuple_cartesian_prod_t = typename tuple_cartesian_prod<TupleA, TupleB>::type;
 }
 
 namespace bcl{
+	namespace detail{
+		template <typename Tuple, typename Result, ::std::size_t I, ::std::size_t N>
+		struct tuple_cartesian_prod_variadic_impl{
+			using left = tuple_cartesian_prod_variadic_impl<
+				Tuple, Result, I, N / 2 + N % 2
+			>;
+			using right = tuple_cartesian_prod_variadic_impl<
+				Tuple, typename left::type, I + N / 2 + N % 2, N / 2
+			>;
+			using type = typename right::type;
+		};
+
+		template <typename Tuple, typename Result, ::std::size_t I>
+		struct tuple_cartesian_prod_variadic_impl<Tuple, Result, I, 1>{
+			using type = ::bcl::tuple_cartesian_prod_t<
+				Result, ::bcl::tuple_element_t<I, Tuple>
+			>;
+		};
+	}
+
 	template <typename ... Tuples>
 	struct tuple_cartesian_prod_variadic{
+		using type = tuple<>;
 	};
+
+	template <typename Tuple>
+	struct tuple_cartesian_prod_variadic<Tuple>{
+		using type = Tuple;
+	};
+
+	template <typename Head, typename ... Rest>
+	struct tuple_cartesian_prod_variadic<Head, Rest...> : detail::tuple_cartesian_prod_variadic_impl<
+		tuple<Rest...>, Head, 0, sizeof...(Rest)
+	>{
+	};
+
+	template <typename ... Tuples>
+	using tuple_cartesian_prod_variadic_t = typename tuple_cartesian_prod_variadic<Tuples...>::type;
 }
 

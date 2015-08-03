@@ -23,5 +23,13 @@ int main()
 		bcl::tuple<bcl::tuple<int>, bcl::tuple<float>, bcl::tuple<long>>,
 		bcl::tuple<bcl::tuple<short>, bcl::tuple<double>, bcl::tuple<char>>>::type>() << std::endl;
 
+	std::cout << name<bcl::tuple_cartesian_prod_variadic<
+		bcl::tuple<bcl::tuple<int>, bcl::tuple<float>, bcl::tuple<long>>,
+		bcl::tuple<bcl::tuple<short>, bcl::tuple<double>, bcl::tuple<char>>>::type>() << std::endl;
+
+	std::cout << name<bcl::tuple_cartesian_prod_variadic<
+		bcl::tuple<bcl::tuple<int>, bcl::tuple<float>, bcl::tuple<long>>,
+		bcl::tuple<bcl::tuple<short>, bcl::tuple<double>, bcl::tuple<char>>,
+		bcl::tuple<bcl::tuple<unsigned>, bcl::tuple<unsigned char>>>::type>() << std::endl;
 }
 
