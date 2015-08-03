@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include <bcl/tuple.hpp>
-#include <bcl/tuple_operation.hpp>
 
 #include <typeinfo>
 #include <cxxabi.h>
@@ -19,5 +18,10 @@ int main()
 	using u = bcl::tuple<char, wchar_t, short>;
 
 	std::cout << name<bcl::tuple_merge_t<t, s, u>>() << std::endl;
+
+	std::cout << name<bcl::tuple_cartesian_prod<
+		bcl::tuple<bcl::tuple<int>, bcl::tuple<float>, bcl::tuple<long>>,
+		bcl::tuple<bcl::tuple<short>, bcl::tuple<double>, bcl::tuple<char>>>::type>() << std::endl;
+
 }
 

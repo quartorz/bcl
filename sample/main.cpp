@@ -1,6 +1,5 @@
 #include <bcl/tuple.hpp>
 #include <bcl/value_tuple.hpp>
-#include <bcl/tuple_operation.hpp>
 
 #include <iostream>
 #include <typeinfo>
