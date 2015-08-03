@@ -30,6 +30,6 @@ namespace bcl{
 		::std::false_type test_ ## name ## _func(long);\
 	}\
 	template <typename T, typename ... Args>\
-	class has_ ## name ## _func : decltype(detail::test_ ## name ## _func<T, Args...>()){\
+	struct has_ ## name ## _func : decltype(detail::test_ ## name ## _func<T, Args...>(0)){\
 	};\
 

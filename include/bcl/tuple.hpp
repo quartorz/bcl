@@ -478,11 +478,13 @@ namespace bcl{
 			template <typename T> typename Func, typename Tuple,
 			typename Result, ::std::size_t I, ::std::size_t N
 		>
-		struct tuple_map_impl{
+		class tuple_map_impl{
 			using left = tuple_map_impl<Func, Tuple, Result, I, N / 2 + N % 2>;
 			using right = tuple_map_impl<
 				Func, Tuple, typename left::type, I + N / 2 + N % 2, N / 2
 			>;
+
+		public:
 			using type = typename right::type;
 		};
 
@@ -490,8 +492,10 @@ namespace bcl{
 			template <typename T> typename Func, typename Tuple,
 			typename Result, ::std::size_t I
 		>
-		struct tuple_map_impl<Func, Tuple, Result, I, 1>{
+		class tuple_map_impl<Func, Tuple, Result, I, 1>{
 			using result = typename Func<::bcl::tuple_element_t<I, Tuple>>::type;
+
+		public:
 			using type = ::bcl::tuple_concat_t<Result, tuple<result>>;
 		};
 	}
@@ -513,13 +517,15 @@ namespace bcl{
 			typename TupleA, typename TupleB,
 			typename Result, ::std::size_t I, ::std::size_t N
 		>
-		struct tuple_cartesian_prod_impl{
+		class tuple_cartesian_prod_impl{
 			using left = tuple_cartesian_prod_impl<
 				TupleA, TupleB, Result, I, N / 2 + N % 2
 			>;
 			using right = tuple_cartesian_prod_impl<
 				TupleA, TupleB, typename left::type, I + N / 2 + N % 2, N / 2
 			>;
+
+		public:
 			using type = typename right::type;
 		};
 
@@ -527,7 +533,7 @@ namespace bcl{
 			typename TupleA, typename TupleB,
 			typename Result, ::std::size_t I
 		>
-		struct tuple_cartesian_prod_impl<TupleA, TupleB, Result, I, 1>{
+		class tuple_cartesian_prod_impl<TupleA, TupleB, Result, I, 1>{
 			using element = ::bcl::tuple_element_t<I, TupleA>;
 
 			template <typename T>
@@ -535,6 +541,7 @@ namespace bcl{
 				using type = ::bcl::tuple_concat_t<element, T>;
 			};
 
+		public:
 			using type = ::bcl::tuple_concat_t<Result, ::bcl::tuple_map_t<func, TupleB>>;
 		};
 	}
@@ -552,13 +559,15 @@ namespace bcl{
 namespace bcl{
 	namespace detail{
 		template <typename Tuple, typename Result, ::std::size_t I, ::std::size_t N>
-		struct tuple_cartesian_prod_variadic_impl{
+		class tuple_cartesian_prod_variadic_impl{
 			using left = tuple_cartesian_prod_variadic_impl<
 				Tuple, Result, I, N / 2 + N % 2
 			>;
 			using right = tuple_cartesian_prod_variadic_impl<
 				Tuple, typename left::type, I + N / 2 + N % 2, N / 2
 			>;
+
+		public:
 			using type = typename right::type;
 		};
 
