@@ -66,6 +66,9 @@ namespace bcl{
 	{
 		return x.template get<I>();
 	}
+
+	template <::std::size_t ... Is>
+	using index_tuple = value_tuple<::std::size_t, Is...>;
 }
 
 // tuple_size and tuple_element
