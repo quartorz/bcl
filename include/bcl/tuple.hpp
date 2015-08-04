@@ -654,3 +654,82 @@ namespace bcl{
 	using tuple_replace_t = typename tuple_replace<I, T, Tuple>::type;
 }
 
+namespace bcl{
+	namespace detail{
+		struct tuple_intersection_null{};
+
+		template <
+			typename TupleA, typename TupleB,
+			::std::size_t I, ::std::size_t N,
+			typename = void
+		>
+		class tuple_intersection_impl{
+			using left = tuple_intersection_impl<
+				TupleA, TupleB, I, N / 2 + N % 2
+			>;
+			using right = tuple_intersection_impl<
+				TupleA, typename left::state, I + N / 2 + N % 2, N / 2
+			>;
+
+		public:
+			using state = typename right::state;
+			using type = ::bcl::tuple_concat_t<
+				typename left::type, typename right::type
+			>;
+		};
+
+		template <
+			typename TupleA, typename TupleB,
+			::std::size_t I
+		>
+		struct tuple_intersection_impl<TupleA, TupleB, I, 0, void>{
+			using state = TupleB;
+			using type = ::bcl::tuple<>;
+		};
+
+		template <
+			typename TupleA, typename TupleB,
+			::std::size_t I
+		>
+		class tuple_intersection_impl<
+			TupleA, TupleB, I, 1, ::std::enable_if_t<
+				::bcl::has_value_v<::bcl::tuple_find_t<
+					::bcl::tuple_element_t<I, TupleA>,
+					TupleB
+				>>
+			>
+		>{
+			static constexpr auto index = ::bcl::tuple_find_t<
+				::bcl::tuple_element_t<I, TupleA>, TupleB
+			>::value;
+
+		public:
+			using state = ::bcl::tuple_replace_t<
+				index, tuple_intersection_null, TupleB
+			>;
+			using type = ::bcl::tuple<::bcl::tuple_element_t<I, TupleA>>;
+		};
+
+		template <
+			typename TupleA, typename TupleB,
+			::std::size_t I
+		>
+		class tuple_intersection_impl<
+			TupleA, TupleB, I, 1, ::std::enable_if_t<
+				!::bcl::has_value_v<::bcl::tuple_find_t<
+					::bcl::tuple_element_t<I, TupleA>,
+					TupleB
+				>>
+			>
+		>{
+			using state = TupleB;
+			using type = ::bcl::tuple<>;
+		};
+
+	}
+
+	template <typename TupleA, typename TupleB>
+	struct tuple_intersection{
+	};
+}
+
