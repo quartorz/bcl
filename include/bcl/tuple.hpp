@@ -314,6 +314,19 @@ namespace bcl{
 }
 
 namespace bcl{
+	template <typename T>
+	struct tuple_from;
+
+	template <template <typename ...> typename T, typename ... Ts>
+	struct tuple_from<T<Ts...>>{
+		using type = tuple<Ts...>;
+	};
+
+	template <typename T>
+	using tuple_from_t = typename tuple_from<T>::type;
+}
+
+namespace bcl{
 	namespace detail{
 		template <
 			template <typename T, typename Tuple> typename Comp,
@@ -597,5 +610,47 @@ namespace bcl{
 
 	template <typename ... Tuples>
 	using tuple_cartesian_prod_variadic_t = typename tuple_cartesian_prod_variadic<Tuples...>::type;
+}
+
+namespace bcl{
+	namespace detail{
+		template <::std::size_t I, typename T, typename Tuple, ::std::size_t C, ::std::size_t N>
+		class tuple_replace_impl{
+			using left = tuple_replace_impl<
+				I, T, Tuple, C, N / 2 + N % 2
+			>;
+			using right = tuple_replace_impl<
+				I, T, Tuple, C + N / 2 + N % 2, N / 2
+			>;
+
+
+		public:
+			using type = ::bcl::tuple_concat_t<typename left::type, typename right::type>;
+		};
+
+		template <::std::size_t I, typename T, typename Tuple, ::std::size_t C>
+		struct tuple_replace_impl<I, T, Tuple, C, 0>{
+			using type = ::bcl::tuple<>;
+		};
+
+		template <::std::size_t I, typename T, typename Tuple>
+		struct tuple_replace_impl<I, T, Tuple, I, 1>{
+			using type = ::bcl::tuple<T>;
+		};
+
+		template <::std::size_t I, typename T, typename Tuple, ::std::size_t C>
+		struct tuple_replace_impl<I, T, Tuple, C, 1>{
+			using type = ::bcl::tuple<::bcl::tuple_element_t<C, Tuple>>;
+		};
+	}
+
+	template <::std::size_t I, typename T, typename Tuple>
+	struct tuple_replace : detail::tuple_replace_impl<
+		I, T, Tuple, 0, ::bcl::tuple_size<Tuple>::value
+	>{
+	};
+
+	template <::std::size_t I, typename T, typename Tuple>
+	using tuple_replace_t = typename tuple_replace<I, T, Tuple>::type;
 }
 
