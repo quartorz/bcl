@@ -11,7 +11,7 @@
 #include <sprout/math/isnormal.hpp>
 #include <sprout/math/fabs.hpp>
 
-#include <bcl/pow2.hpp>
+#include <bcl/math/pow2.hpp>
 
 namespace bcl{
 	namespace detail{
