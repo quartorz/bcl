@@ -48,6 +48,8 @@ namespace bcl{
 			: holder<Is, Types>...
 		{
 			constexpr tuple_base() = default;
+			constexpr tuple_base(const tuple_base &) = default;
+			constexpr tuple_base(tuple_base&&) = default;
 
 			template <typename ... Args, typename = ::std::enable_if_t<sizeof...(Args) != 0>>
 			constexpr tuple_base(Args && ... args)
@@ -82,6 +84,12 @@ namespace bcl{
 		};
 	}
 
+	namespace detail{
+		template <typename T>
+		struct is_tuple : ::std::false_type{
+		};
+	}
+
 	/*! @class bcl::tuple<Types...>
 	    @brief simple constexpr tuple
 		       instantiation depth increases O(log2(sizeof...Types))
@@ -90,10 +98,51 @@ namespace bcl{
 	struct tuple
 		: detail::tuple_base<::sprout::index_range<0, sizeof...(Ts)>, Ts...>
 	{
+	private:
+		using base_type = detail::tuple_base<::sprout::index_range<0, sizeof...(Ts)>, Ts...>;
+
+	public:
 		tuple() = default;
 		tuple(const tuple&) = default;
 		tuple(tuple &&) = default;
-		using detail::tuple_base<::sprout::index_range<0, sizeof...(Ts)>, Ts...>::tuple_base;
+
+		template <
+			typename Arg, typename ... Args,
+			::std::enable_if_t<
+				sizeof...(Ts) == (sizeof...(Args) + 1)
+				&& (sizeof...(Args) == 0 && !detail::is_tuple<Arg>{})
+			>* = nullptr
+		>
+		tuple(Arg &&arg, Args &&... args)
+			: base_type(::std::forward<Arg>(arg), ::std::forward<Args>(args)...)
+		{
+		}
+
+		//using detail::tuple_base<::sprout::index_range<0, sizeof...(Ts)>, Ts...>::tuple_base;
+
+		template <typename ... Us>
+		tuple(const tuple<Us...> &t)
+			: tuple(static_cast<tuple<Ts...>>(t))
+		{
+		}
+
+	private:
+		template <typename ... Us, ::sprout::index_t ... Is>
+		constexpr auto cast_impl(::sprout::index_tuple<Is...>) const
+		{
+			return tuple<Us...>(static_cast<Us>(this->template get<Is>())...);
+		}
+
+	public:
+		template <typename ... Us>
+		constexpr operator tuple<Us...>() const
+		{
+			return cast_impl<Us...>(::sprout::make_index_tuple<sizeof...(Us)>::make());
+		}
+	};
+
+	template <>
+	struct tuple<>{
 	};
 
 	/*! @brief equivalent to std::get<I>
