@@ -270,7 +270,7 @@ namespace bcl{
 		if(int_bin.size() >= 53){
 			int one = 0;
 
-			for(int i = 53, j = (int_bin.size() == 54 ? 1 : 0); i > 0; --i){
+			for(int i = 53, j = (int_bin.size() == 54 ? 1 : 0); i >= 0; --i){
 				intpart *= 2.0;
 				intpart += static_cast<double>(int_bin[i + j]);
 
