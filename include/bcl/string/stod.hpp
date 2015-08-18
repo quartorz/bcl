@@ -50,8 +50,8 @@ namespace bcl{
 	template <typename String>
 	constexpr double stod(String &&s, ::std::size_t *pos = nullptr, int mode = 0)
 	{
-		using std::begin;
-		using std::end;
+		using ::sprout::begin;
+		using ::sprout::end;
 
 		auto iter = begin(s);
 		auto e = end(s);
@@ -160,7 +160,7 @@ namespace bcl{
 			return sign * ::std::numeric_limits<double>::infinity();
 
 		// convert fraction part from decimal to binary
-		int frac_dec_digits = (-e10 < 0) ? 0 : -e10 - 1;
+		int frac_dec_digits = (-e10 <= 0) ? 0 : -e10 - 1;
 		int frac_dec[325 + 16] = {};
 		detail::circular_array<int, 54> frac_bin{};
 		int frac_bin_exp = 0;
@@ -287,12 +287,12 @@ namespace bcl{
 			return sign * intpart * pow2(int_bin_digits - 53);
 		}
 
-		for(int i = int_bin.size(); i > 0; --i){
+		for(int i = int_bin.size() - 1; i >= 0; --i){
 			intpart *= 2.0;
 			intpart += static_cast<double>(int_bin[i]);
 		}
 
-		intpart *= pow2(int_bin_digits - int_bin.size() + 1);
+		intpart *= pow2(int_bin_digits - int_bin.size());
 
 		// make fraction part
 		double fracpart = 0.0;
