@@ -24,8 +24,9 @@ namespace bcl{
 		public:
 			constexpr holder() = default;
 
-			constexpr holder(T a)
-				: value(a)
+			template <typename U>
+			constexpr holder(U &&a)
+				: value(::std::forward<U>(a))
 			{
 			}
 
@@ -110,7 +111,7 @@ namespace bcl{
 			typename Arg, typename ... Args,
 			::std::enable_if_t<
 				sizeof...(Ts) == (sizeof...(Args) + 1)
-				&& (sizeof...(Args) == 0 && !detail::is_tuple<Arg>{})
+				&& (sizeof...(Args) != 0 || !detail::is_tuple<Arg>{})
 			>* = nullptr
 		>
 		tuple(Arg &&arg, Args &&... args)
@@ -154,9 +155,15 @@ namespace bcl{
 	}
 
 	template <::sprout::index_t I, typename ... Ts>
-	auto &get(tuple<Ts...> &x)
+	constexpr auto &get(tuple<Ts...> &x)
 	{
 		return x.template get<I>();
+	}
+
+	template <typename ... Ts>
+	constexpr auto make_tuple(Ts && ... args)
+	{
+		return tuple<::std::decay_t<Ts>...>(::std::forward<Ts>(args)...);
 	}
 }
 
