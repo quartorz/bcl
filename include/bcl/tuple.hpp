@@ -522,7 +522,7 @@ namespace bcl{
 
 		template <bool, typename T, typename Tuple>
 		struct tuple_merge_state{
-			using type = ::bcl::tuple_concat_t<T, Tuple>;
+			using type = ::bcl::tuple_concat_t<Tuple, T>;
 		};
 	}
 
@@ -679,7 +679,6 @@ namespace bcl{
 				I, T, Tuple, C + N / 2 + N % 2, N / 2
 			>;
 
-
 		public:
 			using type = ::bcl::tuple_concat_t<typename left::type, typename right::type>;
 		};
@@ -787,5 +786,20 @@ namespace bcl{
 	template <typename TupleA, typename TupleB>
 	struct tuple_intersection{
 	};
+}
+
+// tuple_extract
+
+namespace bcl{
+	template <typename VTuple, typename Tuple>
+	struct tuple_extract;
+
+	template <typename T, T ... Is, typename ... Us>
+	struct tuple_extract<value_tuple<T, Is...>, tuple<Us...>>{
+		using type = ::bcl::tuple<::bcl::tuple_element_t<Is, tuple<Us...>>...>;
+	};
+
+	template <typename VTuple, typename Tuple>
+	using tuple_extract_t = typename tuple_extract<VTuple, Tuple>::type;
 }
 
