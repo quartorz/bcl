@@ -225,13 +225,23 @@ namespace bcl{
 			return BCL_DOUBLE(result){};
 		}
 
-		template<
+		template <
 			typename T, typename U,
 			::std::enable_if_t<is_encoded_double_v<T> && is_encoded_double_v<U>>* = nullptr
 		>
 		constexpr auto operator-(T, U)
 		{
 			constexpr auto result = encode(T::value - U::value);
+			return BCL_DOUBLE(result){};
+		}
+
+		template <
+			typename T,
+			::std::enable_if_t<is_encoded_double_v<T>>* = nullptr
+		>
+		constexpr auto operator-(T)
+		{
+			constexpr auto result = encode(-T::value);
 			return BCL_DOUBLE(result){};
 		}
 
