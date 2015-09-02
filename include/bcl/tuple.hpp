@@ -206,6 +206,37 @@ namespace bcl{
 	using tuple_size = typename detail::tuple_size_impl<::std::decay_t<Tuple>>::type;
 }
 
+namespace bcl{
+	namespace detail{
+		template <
+			typename T, typename U,
+			::sprout::index_t ... Is,
+			::sprout::index_t ... Js
+		>
+		constexpr auto tuple_cat_impl(T &&t, U &&u, ::sprout::index_tuple<Is...>, ::sprout::index_tuple<Js...>)
+		{
+			using result_type = ::bcl::tuple<
+				::bcl::tuple_element_t<Is, ::std::decay_t<T>>...,
+				::bcl::tuple_element_t<Js, ::std::decay_t<U>>...
+			>;
+			return result_type(
+				::std::forward<::bcl::tuple_element_t<Is, ::std::decay_t<T>>>(::bcl::get<Is>(t))...,
+				::std::forward<::bcl::tuple_element_t<Js, ::std::decay_t<U>>>(::bcl::get<Is>(u))...
+			);
+		}
+	}
+
+	template <typename T, typename U>
+	constexpr auto tuple_cat(T &&t, U &&u)
+	{
+		return detail::tuple_cat_impl(
+			::std::forward<T>(t), ::std::forward<U>(u),
+			::sprout::make_index_tuple<tuple_size<T>::value>::make(),
+			::sprout::make_index_tuple<tuple_size<U>::value>::make()
+		);
+	}
+}
+
 // definition of tuple_find<Tuple, T>
 
 namespace bcl{
