@@ -7,7 +7,7 @@
 
 namespace bcl{
 	namespace literals{
-		namespace double_constant{
+		inline namespace double_constant{
 			template <char ... Chars>
 			constexpr auto operator "" _dc()
 			{
@@ -18,8 +18,6 @@ namespace bcl{
 				return BCL_DOUBLE(e){};
 			}
 		}
-
-		using double_constant::operator "" _dc;
 	}
 }
 
