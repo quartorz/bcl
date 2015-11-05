@@ -6,6 +6,8 @@
 
 #include <sprout/ctype.hpp>
 #include <sprout/tuple.hpp>
+#include <sprout/container.hpp>
+#include <sprout/iterator.hpp>
 #include <sprout/string.hpp>
 #include <sprout/detail/char_literal.hpp>
 
@@ -17,7 +19,7 @@ namespace bcl{
 		template <typename Iter>
 		constexpr auto get_sign(Iter iter, Iter end)
 		{
-			using value_type = typename ::std::iterator_traits<Iter>::value_type;
+			using value_type = typename ::sprout::iterator_traits<Iter>::value_type;
 
 			int sign = 1;
 
@@ -36,7 +38,7 @@ namespace bcl{
 		template <typename Iter>
 		constexpr auto get_number(Iter iter, Iter end)
 		{
-			using value_type = typename ::std::iterator_traits<Iter>::value_type;
+			using value_type = typename ::sprout::iterator_traits<Iter>::value_type;
 
 			Iter begin = iter;
 
@@ -50,13 +52,13 @@ namespace bcl{
 	template <typename String>
 	constexpr double stod(String &&s, ::std::size_t *pos = nullptr, int mode = 0)
 	{
-		using ::sprout::begin;
-		using ::sprout::end;
+		using ::sprout::cbegin;
+		using ::sprout::cend;
 
-		auto iter = begin(s);
-		auto e = end(s);
+		auto iter = cbegin(s);
+		auto e = cend(s);
 
-		using value_type = typename ::std::iterator_traits<decltype(iter)>::value_type;
+		using value_type = typename ::sprout::iterator_traits<decltype(iter)>::value_type;
 
 		// ignore leading spaces
 		while(iter != e && ::sprout::isspace(*iter))
@@ -98,7 +100,7 @@ namespace bcl{
 		}
 
 		if(pos != nullptr)
-			*pos = (iter - begin(s));
+			*pos = (iter - cbegin(s));
 
 		// ignore leading zeros of integer part
 		while(intpart_begin != intpart_end && *intpart_begin == SPROUT_CHAR_LITERAL('0', value_type))
